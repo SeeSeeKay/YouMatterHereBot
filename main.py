@@ -1,4 +1,5 @@
-import os, telebot, random
+import os, random
+from dotenv import load_dotenv
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     ApplicationBuilder,
@@ -12,9 +13,10 @@ from telegram.ext import (
 
 USER_DATA = {}
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN")
+load_dotenv()
 
-bot = telebot.TeleBot(BOT_TOKEN)
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
+print("BOT_TOKEN = ",BOT_TOKEN)
 
 OPENINGS = {
   "sad": [
@@ -107,7 +109,11 @@ conv_handler = ConversationHandler(
         MOOD: [CallbackQueryHandler(mood_handler)]
     },
     fallbacks=[CommandHandler("start", start)],
+    per_chat=True,
+    per_user=True,
+    per_message=False
 )
-
+ 
 app = ApplicationBuilder().token(BOT_TOKEN).build()
 app.add_handler(conv_handler)
+app.run_polling()
